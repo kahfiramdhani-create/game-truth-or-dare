@@ -1,20 +1,21 @@
 {
-  "name": "Truth or Dare Spin",
+  "name": "Truth or Dare",
   "short_name": "T or D",
   "description": "Game Truth or Dare dengan roda putar, kartu custom, timer, dan skor.",
-  "start_url": "./",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#F5F0E4",
   "theme_color": "#FFC93C",
   "icons": [
-  {
-    "src": "https://imgur.com/a/hNtVM7j",
-    "sizes": "192x192",
-    "type": "image/png"
-  },
-  {
-    "src": "https://imgur.com/a/hNtVM7j",
-    "sizes": "512x512",
-    "type": "image/png"
-  }
+    {
+      "src": "https://i.ibb.co.com/LXgsN1wr/launchericon-512x512.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.ibb.co.com/LXgsN1wr/launchericon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
+}
