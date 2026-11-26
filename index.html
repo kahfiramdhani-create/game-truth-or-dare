@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRUTH or DARE — Spin!</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Ikon dari Generator -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json"> <!-- Ubah site.webmanifest jadi manifest.json -->
+  <meta name="theme-color" content="#FFC93C">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ LAYAR 1: SETUP ============ -->
+  <section id="setup" class="panel active">
+    <div class="hero">
+      <div class="sticker">SPIN!</div>
+      <h1 class="title">
+        <span class="line">TRUTH</span>
+        <span class="line"><span class="or">or</span>DARE</span>
+      </h1>
+      <p class="tagline">Masukkan nama pemain, putar roda, lalu hadapi pertanyaan atau tantangannya.</p>
+    </div>
+
+    <div class="box">
+      <div class="row">
+        <input id="nameInput" class="input" type="text" placeholder="Nama pemain..." maxlength="14" autocomplete="off">
+        <button id="addBtn" class="btn btn-add" aria-label="Tambah pemain">+</button>
+      </div>
+
+      <div id="playerList" class="chips"></div>
+      <p class="hint">Minimal 2 pemain (maks 24). Tekan Enter untuk menambah cepat.</p>
+
+      <div class="setup-actions">
+        <button id="settingsBtn" class="btn btn-icon" aria-label="Pengaturan permainan" title="Pengaturan">⚙️</button>
+        <button id="startBtn" class="btn btn-yellow big" disabled>Mulai →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LAYAR 2: GAME ============ -->
+  <section id="game" class="panel">
+    <div class="topbar">
+      <button id="backBtn" class="btn btn-small">← Pemain</button>
+      <div class="topbar-right">
+        <button id="soundToggle" class="sound-toggle" aria-label="Suara">🔊</button>
+        <span id="roundInfo" class="badge">Putaran 1</span>
+      </div>
+    </div>
+
+    <div class="wheel-card">
+      <div class="wheel-wrap">
+        <canvas id="wheel" width="600" height="600"></canvas>
+        <div class="pointer"></div>
+        <button id="spinBtn" class="spin-center">SPIN</button>
+      </div>
+    </div>
+
+    <p id="spinStatus" class="status">Siap di-spin!</p>
+
+    <!-- Skor (muncul hanya kalau poin aktif) -->
+    <div id="scoreboard" class="scoreboard hidden">
+      <div class="scoreboard-header">
+        <span class="scoreboard-title">🏆 Skor</span>
+        <button id="resetScoreBtn" class="scoreboard-reset" title="Reset skor">↻</button>
+      </div>
+      <div id="scoreboardList" class="scoreboard-list"></div>
+    </div>
+
+    <div id="stage" class="stage"></div>
+
+    <section class="history-section">
+      <p class="history-title">📜 Riwayat Putaran</p>
+      <div class="history-list" id="historyList">
+        <p class="history-empty">Belum ada riwayat.</p>
+      </div>
+    </section>
+  </section>
+
+</div>
+
+<!-- =========================================================
+     MODAL: PENGATURAN
+     ========================================================= -->
+<div id="settingsModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">⚙️ Pengaturan</h2>
+      <button class="modal-close" data-close="settingsModal" aria-label="Tutup">×</button>
+    </div>
+
+    <p class="settings-section-title">Mode</p>
+    <div class="setting-group">
+      <div class="setting-header">
+        <span class="setting-title">🎮 Mode Bebas</span>
+        <span class="setting-desc">Matikan semua aturan — cuma spin & main</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="freeModeToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <p class="settings-section-title">Aturan Permainan</p>
+    <div class="setting-group" data-setting>
+      <div class="setting-header">
+        <span class="setting-title">⏱️ Timer</span>
+        <span class="setting-desc">Batas waktu untuk menjawab tantangan</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="timerToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="setting-sub" id="timerDurationGroup">
+      <label class="sub-label">Durasi</label>
+      <select id="timerDuration" class="select">
+        <option value="15">15 detik</option>
+        <option value="30" selected>30 detik</option>
+        <option value="60">60 detik</option>
+        <option value="90">90 detik</option>
+      </select>
+    </div>
+
+    <div class="setting-group" data-setting>
+      <div class="setting-header">
+        <span class="setting-title">🏆 Sistem Poin</span>
+        <span class="setting-desc">Dapat +1 poin setiap berhasil</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="pointsToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-group" data-setting>
+      <div class="setting-header">
+        <span class="setting-title">🙅 Penalti Tolak</span>
+        <span class="setting-desc">Kena -1 poin kalau menolak tantangan</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="penaltyToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <p class="settings-section-title">Tampilan</p>
+    <div class="setting-group">
+      <div class="setting-header">
+        <span class="setting-title">🌙 Mode Gelap</span>
+        <span class="setting-desc">Tema gelap biar mata nyaman</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="darkModeToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <p class="settings-section-title">Konten</p>
+    <div class="setting-group">
+      <div class="setting-header">
+        <span class="setting-title">✍️ Kartu Custom</span>
+        <span class="setting-desc">Tambah Truth/Dare buatan sendiri</span>
+      </div>
+      <button id="customCardsBtn" class="btn btn-small">Kelola</button>
+    </div>
+
+    <p class="settings-section-title">Reset</p>
+    <div class="setting-group">
+      <div class="setting-header">
+        <span class="setting-title">🔄 Reset Data</span>
+        <span class="setting-desc">Hapus semua pemain, skor & kartu custom</span>
+      </div>
+      <button id="resetAllBtn" class="btn btn-small btn-reset">Reset</button>
+    </div>
+
+    <button class="btn btn-yellow big" data-close="settingsModal">Selesai</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     MODAL: KARTU CUSTOM
+     ========================================================= -->
+<div id="customCardsModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">✍️ Kartu Custom</h2>
+      <button class="modal-close" data-close="customCardsModal" aria-label="Tutup">×</button>
+    </div>
+
+    <div class="custom-tabs">
+      <button class="tab active" data-tab="truth">Truth</button>
+      <button class="tab" data-tab="dare">Dare</button>
+    </div>
+
+    <textarea id="customCardInput" class="custom-input" rows="2" maxlength="200" placeholder="Tulis kartu baru..."></textarea>
+    <button id="addCustomCardBtn" class="btn btn-yellow custom-add-btn">+ Tambah</button>
+
+    <div id="customCardsList" class="custom-list">
+      <p class="custom-empty">Belum ada kartu custom.</p>
+    </div>
+
+    <button class="btn btn-yellow big" data-close="customCardsModal">Selesai</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
